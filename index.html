@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Add a default marker</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+<style>
+	body { margin: 0; padding: 0; }
+	#map { position: absolute; top: 0; bottom: 0; width: 100%;}
+	.mapboxgl-popup { max-width: 200px;}
+
+.mapboxgl-popup-content {
+  text-align: center;
+  font-family: 'Open Sans', sans-serif;
+} 
+</style>
+</head>
+<body>
+	<div id="map"></div>
+ 
+</body>
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1Ijoia2RldmVuZHJhMTk4MSIsImEiOiJja2U5bHczancxeTNsMnlsNngxM2Zrdmh6In0.Mwt-j83L23aesejRbvj9gw';
+	var map = new mapboxgl.Map({
+		container: 'map',
+		style: 'mapbox://styles/mapbox/streets-v11',
+		center: [73.877190, 29.903839],
+		zoom: 2
+	});
+	url = `https://www.trackcorona.live/api/provinces`;
+	fetch(url).then(response => response.json())
+		.then(res => {
+			counter = 0;
+			res.data.forEach(element => {
+				counter++;
+				longitude = element.longitude;
+				latitude = element.latitude;
+				if(element.confirmed>10000){
+					clr = "red";
+				}else if(element.confirmed>1000){
+					clr = "orange";
+				}else{
+					clr = "yellow"
+				}
+				new mapboxgl.Marker({
+					color: clr,
+				})
+				// .setLngLat(marker.geometry.coordinates)
+				.setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
+				.setHTML('<h3>' + 'Corona Cases:' + '</h3><p>' + "Confirmed:" + element.confirmed +"<br>"+ "Dead:" + element.dead +"<br>"+"Recovered:" + element.recovered +"<br>"+"Updated on:" + element.updated +"<br>"+'</p>'))
+				 .setLngLat([longitude, latitude])
+					.addTo(map);
+				// marker.size(size);
+	
+			});
+	
+	
+		});</script>
+</html>
